@@ -1,7 +1,7 @@
-/*!
+﻿/*!
  * jQuery.nnmGrid
  *
- * @version 0.4
+ * @version 1.0
  * @author Kazuhiro Shintani
  * @license MIT License (https://github.com/nbnote/jquery-nnmgrid/blob/master/LICENSE)
  * @link https://github.com/nbnote/jquery-nnmgrid
@@ -12,35 +12,20 @@
 
 	var plugname = 'nnmGrid';
 
-	var defaultOptions = {
-		gap: 5,
-		isHover: 'is-hover',
-		itemWidth: 150,
-		itemHeight: 150,
-		itemSelector: '.item',
-		onHover: function() {},
-		onClick: function() {}
-	};
-
-	var intersect = function( p1, p2, p3, p4 ) {
-		var n1 = (p1.x - p2.x) * (p3.y - p1.y) + (p1.y - p2.y) * (p1.x - p3.x);
-		var n2 = (p1.x - p2.x) * (p4.y - p1.y) + (p1.y - p2.y) * (p1.x - p4.x);
-		return n1 * n2 < 0;
-	};
-
-	var include = function( tp1, tp2, tp3, xp ) {
-		if ( (tp1.x - tp3.x) * (tp1.y - tp2.y) === (tp1.x - tp2.x) * (tp1.y - tp3.y) ) return false;
-		else if ( intersect( tp1, tp2, xp, tp3 ) ) return false;
-		else if ( intersect( tp1, tp3, xp, tp2 ) ) return false;
-		else if ( intersect( tp2, tp3, xp, tp1 ) ) return false;
-		else return true;
-	};
-
-
 	var methods = {
 
+		defaults: {
+			gap: 5,
+			isHover: 'is-hover',
+			itemWidth: 150,
+			itemHeight: 150,
+			itemSelector: '.item',
+			onHover: function() {},
+			onClick: function() {}
+		},
+
 		_init: function( element, option ) {
-			this.options = $.extend( {}, defaultOptions, option );
+			this.options = $.extend( {}, this.defaults, option );
 			this.$element = element;
 			this.$element.data( plugname, this );
 
@@ -74,6 +59,20 @@
 		update: function() {
 			this.width = this.$element.width();
 			this._draw();
+		},
+
+		_intersect: function( p1, p2, p3, p4 ) {
+			var n1 = (p1.x - p2.x) * (p3.y - p1.y) + (p1.y - p2.y) * (p1.x - p3.x);
+			var n2 = (p1.x - p2.x) * (p4.y - p1.y) + (p1.y - p2.y) * (p1.x - p4.x);
+			return n1 * n2 < 0;
+		},
+
+		_include: function( tp1, tp2, tp3, xp ) {
+			if ( (tp1.x - tp3.x) * (tp1.y - tp2.y) === (tp1.x - tp2.x) * (tp1.y - tp3.y) ) return false;
+			else if ( this._intersect( tp1, tp2, xp, tp3 ) ) return false;
+			else if ( this._intersect( tp1, tp3, xp, tp2 ) ) return false;
+			else if ( this._intersect( tp2, tp3, xp, tp1 ) ) return false;
+			else return true;
 		},
 
 		_onMouseMove: function( e ) {
@@ -129,6 +128,7 @@
 			this.numRows = Math.ceil( this.numItems / this.numCols );
 
 			var i = this.numItems;
+			var containerHeight = 0;
 			var wh = Math.floor( opts.itemWidth / 2 );
 			var hh = Math.floor( opts.itemHeight / 2 );
 			var n = this.numCols * 2 - 1;
@@ -147,9 +147,10 @@
 					top: hh * row + (row * opts.gap),
 					left: opts.itemWidth * col + indent + gap
 				} );
+				var h = hh * row + (row * opts.gap) + opts.itemHeight;
+				containerHeight = h > containerHeight ? h : containerHeight;
 			}
-			var h = this.numRows * (opts.itemHeight + opts.gap) - (((opts.itemHeight + opts.gap) / 2) * (this.numRows - 1));
-			$elem.height( h );
+			$elem.height( containerHeight );
 		},
 
 		_getIdFromPoint: function( x, y ) {
@@ -186,7 +187,7 @@
 							default:
 								break;
 						}
-						if ( include( p1, p2, p3, xp ) ) {
+						if ( this._include( p1, p2, p3, xp ) ) {
 							flag = true;
 						}
 					}
