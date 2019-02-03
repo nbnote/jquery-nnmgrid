@@ -1,12 +1,12 @@
-#jQuery.nnmGrid
+# jQuery.nnmGrid
 
 Diagonal grid layout plugin for jQuery
 
 
-##Usage example
+## Usage example
 
 
-###HTML
+### HTML
 
     <ul id="container">
     <li class="item"><a href="#01"><img src="img/btn01.png" alt=""></a></li>
@@ -14,12 +14,12 @@ Diagonal grid layout plugin for jQuery
     <li class="item"><span><img src="img/btn03.png" alt=""></span></li>
     </ul>
 
-###CSS
+### CSS
     #container {
       width: 630px;
     }
 
-###JavaScript
+### JavaScript
     // DOM Ready
     jQuery(function($){
       var $container = $( '#container' ).nnmGrid({
@@ -37,6 +37,6 @@ Diagonal grid layout plugin for jQuery
       $container.nnmGrid( 'update' );
     });
 
-##Demo
+## Demo
 
 http://nbnote.github.io/jquery-nnmgrid/
